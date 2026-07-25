@@ -57,6 +57,34 @@ GROQ_API_KEY=YOUR_GROQ_API_KEY_HERE
 
 ---
 
+## 📖 Usage
+
+### 1. Generating Study Guides
+* **Input Topic**: Enter a specific topic (e.g., *"React Hooks"*) or copy-paste lecture notes, a syllabus, or raw text directly into the dashboard textbox.
+* **Select Tool Mode**:
+  * **Cards**: Generates flashcards for memorization.
+  * **Quiz**: Generates multiple-choice test questions.
+  * **Roadmap**: Generates a step-by-step learning progression.
+* **Set Options**: Choose the desired difficulty (Easy/Medium/Hard) and depth (Quick/Standard/Detailed).
+* **Generate**: Click **Generate Study Guide**. The AI will start streaming the structured content in real-time.
+
+### 2. Interacting with the Study Tools
+* **Flashcards**: Click any card to trigger a 3D flip and reveal the answer. Click **Mastered** (or press Up arrow) if you know it, or **Review Again** (or press Down arrow) if you need more practice. Use the **Review Wrong** filter to only cycle through unmastered cards.
+* **Quiz**: Click any option to submit your answer. The app will immediately color-code your choice (green for correct, red for incorrect) and open the explanation drawer. When finished, you can click **Re-test Wrong Answers** to start a customized quiz focusing only on questions you missed.
+* **Roadmap**: Click on any milestone node to expand it. Check off items in the checklist to update your progress bar, and take the quick **Knowledge Check** mini-quiz at the bottom of the step to validate your understanding.
+
+### 3. Modifying in Real-time (Refinement Console)
+* Scroll below your active study material to find the Refinement Console.
+* Type changes like *"add 3 harder flashcards"* or *"make explanations simpler"*, then click **Refine**.
+* The page will update your current guide in-place using real-time streams, preserving your checklist and mastery progress.
+
+### 4. Managing History
+* Use the sidebar to switch between previous sessions.
+* Click **New** in the sidebar (or **Back to Dashboard** on the workspace) to start a new topic.
+* Click the trash icon next to any saved item to delete it from LocalStorage.
+
+---
+
 ## 🧠 AI-Usage Note
 
 * **Pair Programming**: I paired with Gemini to plan the layout, structure the components, and format the CSS design system.
