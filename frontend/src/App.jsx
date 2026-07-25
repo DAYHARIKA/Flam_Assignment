@@ -9,6 +9,8 @@ import RoadmapView from './components/RoadmapView';
 import RefinementConsole from './components/RefinementConsole';
 import { parsePartialJson } from './utils/partialJsonParser';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+
 export default function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
   const [sessions, setSessions] = useState(() => {
@@ -118,7 +120,7 @@ export default function App() {
     const { topic, mode, difficulty, depth, isRefinement, previousState, refinementPrompt } = requestParams;
 
     try {
-      const response = await fetch('/api/generate', {
+      const response = await fetch(`${API_BASE}/api/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

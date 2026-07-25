@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, HelpCircle, BookOpen, Map, AlertCircle } from 'lucide-react';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+
 export default function Dashboard({ onSubmit, isLoading }) {
   const [topic, setTopic] = useState('');
   const [mode, setMode] = useState('flashcards');
@@ -9,7 +11,7 @@ export default function Dashboard({ onSubmit, isLoading }) {
   const [status, setStatus] = useState({ status: 'loading', mode: 'mock', message: 'Checking server status...' });
 
   useEffect(() => {
-    fetch('/api/status')
+    fetch(`${API_BASE}/api/status`)
       .then(res => res.json())
       .then(data => setStatus(data))
       .catch(() => setStatus({ 
