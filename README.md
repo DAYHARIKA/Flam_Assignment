@@ -30,7 +30,7 @@
 
 * **Frontend**: React (Functional Components & Hooks), Vite, Lucide Icons, and Vanilla CSS.
 * **Backend**: Node/Express server acting as a secure API gateway. Streams structured responses using Server-Sent Events (SSE). Keep your API key safe in `.env`.
-* **AI Model**: Google Gemini (`gemini-2.5-flash`) utilizing `responseMimeType: "application/json"` to enforce structured JSON schema formatting.
+* **AI Model**: Groq (`llama-3.3-70b-versatile`) utilizing standard JSON mode to enforce structured JSON schema formatting.
 
 ---
 
@@ -39,26 +39,21 @@
 ### 1. Prerequisites
 Ensure you have [Node.js](https://nodejs.org/) installed (version 18+ recommended).
 
-### 2. Installation
-Run the root setup command to install dependencies for the root monorepo, backend, and frontend concurrently:
+### 2. Installation & Startup
+To install all dependencies across the monorepo workspace and start both the backend proxy and the frontend developer server concurrently, run:
 ```bash
-npm run setup
+npm install
+npm start
 ```
+Open your browser to `http://localhost:3000`.
 
 ### 3. API Key Configuration (Optional)
 Create or edit `backend/.env`:
 ```env
 PORT=3001
-GEMINI_API_KEY=YOUR_GEMINI_API_KEY_HERE
+GROQ_API_KEY=YOUR_GROQ_API_KEY_HERE
 ```
-*Note: If no key is set, the app will run in **Demo/Mock Mode** using the streaming simulator.*
-
-### 4. Running the Development Server
-Launch both the backend and frontend concurrently:
-```bash
-npm run dev
-```
-Open your browser to `http://localhost:3000`.
+*Note: If no key is set, the app will automatically fall back to **Demo/Mock Mode** using the streaming simulator.*
 
 ---
 

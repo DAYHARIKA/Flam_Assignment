@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "AI-Powered Study Assistant (Flashcards, Quizzes, roadmaps)",
   "scripts": {
-    "setup": "npm install && npm install --prefix backend && npm install --prefix frontend",
+    "postinstall": "npm install --prefix backend && npm install --prefix frontend",
     "dev": "concurrently --kill-others \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
-    "start": "npm run start --prefix backend"
+    "start": "concurrently --kill-others \"npm run start --prefix backend\" \"npm run dev --prefix frontend\""
   },
   "dependencies": {},
   "devDependencies": {
