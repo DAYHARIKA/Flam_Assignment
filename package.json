@@ -2,6 +2,7 @@
   "name": "studybuddy-ai-monorepo",
   "version": "1.0.0",
   "description": "AI-Powered Study Assistant (Flashcards, Quizzes, roadmaps)",
+  "type": "module",
   "scripts": {
     "postinstall": "node scripts/install-all.js",
     "dev": "concurrently --kill-others \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
