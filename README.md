@@ -2,6 +2,9 @@
 
 **StudyBuddy AI** is a premium, responsive React study assistant designed to transform notes or study topics into reliable, interactive tools. It offers **3D Flashcards**, **Interactive Quizzes**, and **Concept Roadmaps** with a real-time AI generation loop, secure backend proxy, session history, and robust error-recovery features.
 
+### 🎬 Walkthrough Demo Video
+Watch the application in action: **[Google Drive Walkthrough Video](https://drive.google.com/file/d/1anLYL0aT_HHjuAjdGTDRq8hLX4KnwqgO/view?usp=drive_link)**
+
 ---
 
 ## 🌟 Key Features
