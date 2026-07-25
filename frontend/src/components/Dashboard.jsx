@@ -32,44 +32,42 @@ export default function Dashboard({ onSubmit, isLoading }) {
   };
 
   return (
-    <div className="glass-panel p-6 md:p-8 max-w-3xl mx-auto pulse-glow">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20 text-purple-400">
+    <div className="glass-panel dashboard-card pulse-glow">
+      <div className="dashboard-header-row">
+        <div className="dashboard-icon-box">
           <Sparkles className="w-6 h-6 animate-pulse" />
         </div>
-        <div>
-          <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
-            Create Study materials
-          </h2>
-          <p className="text-gray-400 text-sm">Enter notes, topics, or outlines to generate interactive study tools.</p>
+        <div className="dashboard-title-box">
+          <h2>Create Study Materials</h2>
+          <p>Enter notes, topics, or outlines to generate interactive study tools.</p>
         </div>
       </div>
 
       {status.status === 'error' ? (
-        <div className="mb-6 p-4 rounded-xl border border-red-500/20 bg-red-500/10 text-red-400 flex items-start gap-3 text-sm">
-          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+        <div className="notice-banner error">
+          <AlertCircle className="w-5 h-5" style={{ flexShrink: 0 }} />
           <div>
-            <span className="font-semibold">Backend Offline:</span> {status.message}
+            <strong>Backend Offline:</strong> {status.message}
           </div>
         </div>
       ) : status.mode === 'mock' ? (
-        <div className="mb-6 p-4 rounded-xl border border-amber-500/20 bg-amber-500/10 text-amber-400 flex items-start gap-3 text-sm">
-          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+        <div className="notice-banner mock">
+          <AlertCircle className="w-5 h-5" style={{ flexShrink: 0 }} />
           <div>
-            <span className="font-semibold">Running in Demo (Mock) Mode:</span> {status.message}
+            <strong>Running in Demo (Mock) Mode:</strong> {status.message}
           </div>
         </div>
       ) : null}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label htmlFor="topic-input" className="block text-sm font-semibold text-gray-300 mb-2">
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="topic-input" className="form-label">
             Paste Notes or Describe Topic
           </label>
           <textarea
             id="topic-input"
             rows="6"
-            className="w-full p-4 rounded-xl border border-white/10 bg-black/30 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/30 transition-all text-sm resize-none"
+            className="textarea-input"
             placeholder={getPlaceholderText()}
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
@@ -78,17 +76,13 @@ export default function Dashboard({ onSubmit, isLoading }) {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">Study Tool Mode</label>
-            <div className="grid grid-cols-3 gap-2">
+        <div className="settings-grid">
+          <div className="form-group">
+            <label className="form-label">Study Tool Mode</label>
+            <div className="toggle-group-3">
               <button
                 type="button"
-                className={`py-2 px-3 rounded-lg text-xs font-semibold border flex flex-col items-center gap-1.5 justify-center transition-all ${
-                  mode === 'flashcards'
-                    ? 'border-purple-500 bg-purple-500/10 text-purple-400'
-                    : 'border-white/10 bg-white/5 text-gray-400 hover:bg-white/10'
-                }`}
+                className={`toggle-btn ${mode === 'flashcards' ? 'active' : ''}`}
                 onClick={() => setMode('flashcards')}
                 disabled={isLoading}
               >
@@ -97,11 +91,7 @@ export default function Dashboard({ onSubmit, isLoading }) {
               </button>
               <button
                 type="button"
-                className={`py-2 px-3 rounded-lg text-xs font-semibold border flex flex-col items-center gap-1.5 justify-center transition-all ${
-                  mode === 'quiz'
-                    ? 'border-purple-500 bg-purple-500/10 text-purple-400'
-                    : 'border-white/10 bg-white/5 text-gray-400 hover:bg-white/10'
-                }`}
+                className={`toggle-btn ${mode === 'quiz' ? 'active' : ''}`}
                 onClick={() => setMode('quiz')}
                 disabled={isLoading}
               >
@@ -110,11 +100,7 @@ export default function Dashboard({ onSubmit, isLoading }) {
               </button>
               <button
                 type="button"
-                className={`py-2 px-3 rounded-lg text-xs font-semibold border flex flex-col items-center gap-1.5 justify-center transition-all ${
-                  mode === 'roadmap'
-                    ? 'border-purple-500 bg-purple-500/10 text-purple-400'
-                    : 'border-white/10 bg-white/5 text-gray-400 hover:bg-white/10'
-                }`}
+                className={`toggle-btn ${mode === 'roadmap' ? 'active' : ''}`}
                 onClick={() => setMode('roadmap')}
                 disabled={isLoading}
               >
@@ -124,20 +110,17 @@ export default function Dashboard({ onSubmit, isLoading }) {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">Difficulty</label>
-            <div className="grid grid-cols-3 gap-2">
+          <div className="form-group">
+            <label className="form-label">Difficulty</label>
+            <div className="toggle-group-3">
               {['easy', 'medium', 'hard'].map((level) => (
                 <button
                   key={level}
                   type="button"
-                  className={`py-2.5 rounded-lg text-xs font-semibold border capitalize transition-all ${
-                    difficulty === level
-                      ? 'border-purple-500 bg-purple-500/10 text-purple-400'
-                      : 'border-white/10 bg-white/5 text-gray-400 hover:bg-white/10'
-                  }`}
+                  className={`toggle-btn ${difficulty === level ? 'active' : ''}`}
                   onClick={() => setDifficulty(level)}
                   disabled={isLoading}
+                  style={{ textTransform: 'capitalize', padding: '10px 4px' }}
                 >
                   {level}
                 </button>
@@ -145,20 +128,17 @@ export default function Dashboard({ onSubmit, isLoading }) {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">Depth / Quantity</label>
-            <div className="grid grid-cols-3 gap-2">
+          <div className="form-group">
+            <label className="form-label">Depth / Quantity</label>
+            <div className="toggle-group-3">
               {['quick', 'standard', 'detailed'].map((d) => (
                 <button
                   key={d}
                   type="button"
-                  className={`py-2.5 rounded-lg text-xs font-semibold border capitalize transition-all ${
-                    depth === d
-                      ? 'border-purple-500 bg-purple-500/10 text-purple-400'
-                      : 'border-white/10 bg-white/5 text-gray-400 hover:bg-white/10'
-                  }`}
+                  className={`toggle-btn ${depth === d ? 'active' : ''}`}
                   onClick={() => setDepth(d)}
                   disabled={isLoading}
+                  style={{ textTransform: 'capitalize', padding: '10px 4px' }}
                 >
                   {d}
                 </button>
@@ -169,7 +149,8 @@ export default function Dashboard({ onSubmit, isLoading }) {
 
         <button
           type="submit"
-          className="w-full btn btn-primary py-3 flex items-center justify-center gap-2 text-base shadow-lg"
+          className="btn btn-primary"
+          style={{ width: '100%', padding: '14px 20px', fontSize: '1rem' }}
           disabled={isLoading || !topic.trim()}
         >
           <Sparkles className="w-5 h-5" />

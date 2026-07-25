@@ -68,18 +68,21 @@ export default function RoadmapView({ data }) {
   const progressPercent = calculateProgress();
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto">
+    <div style={{ maxWidth: '650px', margin: '0 auto' }}>
       {/* Roadmap Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-4">
-        <div>
-          <h2 className="text-xl font-bold">{title || 'Learning Roadmap'}</h2>
-          <p className="text-xs text-gray-400">{steps.length} Milestones on this path</p>
+      <div className="study-header" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '12px' }}>
+        <div className="flex-row-between">
+          <div className="study-title-box">
+            <h2>{title || 'Learning Roadmap'}</h2>
+            <p className="study-subtitle">{steps.length} Milestones on this path</p>
+          </div>
         </div>
-        <div className="w-full sm:w-auto flex items-center gap-3">
-          <div className="text-xs font-semibold text-gray-400 whitespace-nowrap">Progress: {progressPercent}%</div>
-          <div className="flex-1 sm:w-32 bg-white/5 h-2 rounded-full overflow-hidden border border-white/5">
+        
+        <div className="progress-bar-row">
+          <div className="progress-bar-label">Progress: {progressPercent}%</div>
+          <div className="progress-track">
             <div 
-              className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-500" 
+              className="progress-fill" 
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -87,7 +90,7 @@ export default function RoadmapView({ data }) {
       </div>
 
       {/* Roadmap Path */}
-      <div className="relative border-l-2 border-white/5 ml-4 pl-6 space-y-6">
+      <div className="roadmap-timeline">
         {steps.map((step, idx) => {
           const isExpanded = expandedIndex === idx;
           const stepTasks = completedTasks[step.id] || {};
@@ -98,56 +101,52 @@ export default function RoadmapView({ data }) {
           const isStepCompleted = (totalTasksCount > 0 && completedTasksCount === totalTasksCount) && 
                                   (!step.miniQuiz || isQuizCorrect);
 
+          let nodeClass = '';
+          if (isStepCompleted) nodeClass = 'completed';
+          else if (isExpanded) nodeClass = 'active';
+
           return (
-            <div key={step.id} className="relative group">
+            <div key={step.id} style={{ position: 'relative' }}>
               {/* Vertical timeline node indicator */}
               <div 
                 onClick={() => toggleExpand(idx)}
-                className={`absolute -left-[35px] top-1.5 w-6 h-6 rounded-full flex items-center justify-center border cursor-pointer transition-all ${
-                  isStepCompleted 
-                    ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400' 
-                    : isExpanded 
-                    ? 'border-purple-500 bg-purple-500/15 text-purple-400 scale-110 shadow-glow' 
-                    : 'border-white/10 bg-black/40 text-gray-400 group-hover:border-purple-500/50'
-                }`}
+                className={`roadmap-node-point ${nodeClass}`}
               >
                 {isStepCompleted ? (
                   <CheckCircle2 className="w-3.5 h-3.5" />
                 ) : (
-                  <span className="text-[10px] font-bold">{idx + 1}</span>
+                  <span style={{ fontSize: '10px', fontWeight: 700 }}>{idx + 1}</span>
                 )}
               </div>
 
               {/* Milestone Box */}
-              <div className={`glass-card rounded-xl border transition-all ${
-                isExpanded ? 'border-purple-500/30 shadow-md' : 'border-white/5'
-              }`}>
+              <div className={`milestone-container ${isExpanded ? 'active' : ''}`}>
                 {/* Header/Summary Clickable */}
                 <div 
                   onClick={() => toggleExpand(idx)}
-                  className="p-5 flex justify-between items-start gap-4 cursor-pointer hover:bg-white/2 select-none"
+                  className="milestone-header"
                 >
-                  <div className="space-y-1">
-                    <h3 className="text-base font-bold text-gray-100 group-hover:text-purple-400 transition-colors">
-                      {step.title}
-                    </h3>
-                    <p className="text-xs text-gray-400">{step.description}</p>
+                  <div className="milestone-header-left">
+                    <h3 className="milestone-title">{step.title}</h3>
+                    <p className="milestone-desc">{step.description}</p>
                     
-                    {/* Tiny badges */}
-                    <div className="flex flex-wrap gap-2 mt-2">
+                    {/* Tag badges */}
+                    <div className="badge-row">
                       {totalTasksCount > 0 && (
-                        <span className="text-[10px] font-semibold bg-white/5 border border-white/5 text-gray-400 px-2 py-0.5 rounded">
+                        <span className="badge-tag">
                           Tasks: {completedTasksCount}/{totalTasksCount}
                         </span>
                       )}
                       {step.miniQuiz && (
-                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded border ${
-                          quizAnswers[step.id] === undefined 
-                            ? 'bg-purple-500/5 border-purple-500/10 text-purple-400' 
-                            : isQuizCorrect 
-                            ? 'bg-emerald-500/5 border-emerald-500/10 text-emerald-400' 
-                            : 'bg-red-500/5 border-red-500/10 text-red-400'
-                        }`}>
+                        <span 
+                          className={`badge-tag ${
+                            quizAnswers[step.id] === undefined 
+                              ? 'quiz-pending' 
+                              : isQuizCorrect 
+                              ? 'quiz-passed' 
+                              : 'quiz-failed'
+                          }`}
+                        >
                           {quizAnswers[step.id] === undefined 
                             ? 'Quiz Pending' 
                             : isQuizCorrect 
@@ -157,49 +156,45 @@ export default function RoadmapView({ data }) {
                       )}
                     </div>
                   </div>
-                  <button className="text-gray-400 hover:text-white p-1">
+                  <button className="btn" style={{ border: 'none', background: 'transparent', padding: '4px' }}>
                     {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                   </button>
                 </div>
 
                 {/* Expanded Details */}
                 {isExpanded && (
-                  <div className="px-5 pb-6 pt-2 border-t border-white/5 space-y-5 animate-slideDown">
+                  <div className="milestone-content">
                     {/* Step Notes */}
-                    <div className="text-sm text-gray-300 leading-relaxed space-y-2">
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-purple-400 uppercase tracking-wide mb-1">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div className="content-section-title" style={{ color: '#a78bfa' }}>
                         <PlayCircle className="w-4 h-4" /> Learning Guide
                       </div>
-                      <p>{step.details}</p>
+                      <p className="milestone-details-text">{step.details}</p>
                     </div>
 
                     {/* Task Checklist */}
                     {step.checklist && step.checklist.length > 0 && (
-                      <div className="space-y-2.5">
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-pink-400 uppercase tracking-wide">
-                          <CheckSquare className="w-4 h-4" /> Milestones checklist
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <div className="content-section-title" style={{ color: '#f472b6' }}>
+                          <CheckSquare className="w-4 h-4" /> Milestones Checklist
                         </div>
-                        <div className="space-y-1.5">
+                        <div className="checklist-box">
                           {step.checklist.map((task, taskIdx) => {
                             const isChecked = !!stepTasks[taskIdx];
                             return (
                               <div 
                                 key={taskIdx}
                                 onClick={() => toggleTask(step.id, taskIdx)}
-                                className={`flex items-center gap-3 p-3 rounded-lg border border-white/5 bg-white/2 cursor-pointer transition-all hover:bg-white/5 select-none ${
-                                  isChecked ? 'opacity-70 bg-emerald-500/5 border-emerald-500/10' : ''
-                                }`}
+                                className={`checklist-item ${isChecked ? 'checked' : ''}`}
                               >
-                                <button className="text-gray-400">
+                                <button style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}>
                                   {isChecked ? (
                                     <CheckSquare className="w-4 h-4 text-emerald-400" />
                                   ) : (
                                     <Square className="w-4 h-4" />
                                   )}
                                 </button>
-                                <span className={`text-xs md:text-sm font-medium ${
-                                  isChecked ? 'line-through text-gray-500' : 'text-gray-200'
-                                }`}>
+                                <span className="checklist-label">
                                   {task}
                                 </span>
                               </div>
@@ -211,37 +206,33 @@ export default function RoadmapView({ data }) {
 
                     {/* Mini Quiz */}
                     {step.miniQuiz && (
-                      <div className="p-4 rounded-xl border border-white/5 bg-white/2 space-y-3">
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-blue-400 uppercase tracking-wide">
+                      <div className="checkpoint-quiz-box">
+                        <div className="content-section-title" style={{ color: '#60a5fa' }}>
                           <Award className="w-4 h-4" /> Knowledge Check
                         </div>
-                        <div className="text-xs md:text-sm font-semibold text-gray-100">
+                        <div className="checkpoint-question">
                           {step.miniQuiz.question}
                         </div>
                         
-                        <div className="space-y-2">
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                           {step.miniQuiz.options.map((option, oIdx) => {
                             const chosenIdx = quizAnswers[step.id];
                             const answered = chosenIdx !== undefined;
                             const chosen = chosenIdx === oIdx;
                             const correct = step.miniQuiz.answerIndex === oIdx;
 
-                            let btnStyle = 'border-white/10 bg-black/20 hover:bg-black/40 text-gray-300';
+                            let optionClass = '';
                             if (answered) {
-                              if (correct) {
-                                btnStyle = 'border-emerald-500/50 bg-emerald-500/10 text-emerald-400';
-                              } else if (chosen) {
-                                btnStyle = 'border-red-500/50 bg-red-500/10 text-red-400';
-                              } else {
-                                btnStyle = 'border-white/5 opacity-55 text-gray-500';
-                              }
+                              if (correct) optionClass = 'correct';
+                              else if (chosen) optionClass = 'incorrect';
+                              else optionClass = 'disabled';
                             }
 
                             return (
                               <button
                                 key={oIdx}
                                 onClick={() => selectMiniQuizOption(step.id, oIdx)}
-                                className={`w-full p-2.5 rounded-lg border text-left text-xs transition-all ${btnStyle}`}
+                                className={`checkpoint-option-btn ${optionClass}`}
                                 disabled={answered}
                               >
                                 {option}
@@ -251,8 +242,16 @@ export default function RoadmapView({ data }) {
                         </div>
 
                         {quizAnswers[step.id] !== undefined && (
-                          <div className="text-xs text-gray-400 leading-relaxed pt-1.5 border-t border-white/5">
-                            <span className="font-semibold text-purple-400">Explanation:</span>{' '}
+                          <div 
+                            style={{ 
+                              fontSize: '0.75rem', 
+                              color: 'var(--text-muted)', 
+                              lineHeight: 1.5,
+                              paddingTop: '10px',
+                              borderTop: '1px solid var(--border-color)' 
+                            }}
+                          >
+                            <strong style={{ color: '#a78bfa' }}>Explanation:</strong>{' '}
                             {step.miniQuiz.explanation}
                           </div>
                         )}

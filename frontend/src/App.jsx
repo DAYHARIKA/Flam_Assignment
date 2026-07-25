@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, Sun, Moon, RefreshCw, Layout, AlertTriangle, ArrowLeft, Menu, X } from 'lucide-react';
+import { Sparkles, Sun, Moon, RefreshCw, AlertTriangle, ArrowLeft, Menu, X } from 'lucide-react';
 
 import Dashboard from './components/Dashboard';
 import HistorySidebar from './components/HistorySidebar';
@@ -278,32 +278,33 @@ export default function App() {
   const activeData = getActiveSessionData();
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="app-container">
       {/* Header */}
-      <header className="sticky top-0 z-30 w-full border-b border-white/10 bg-app/80 backdrop-blur-md px-4 md:px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <header className="app-header">
+        <div className="logo-section">
           <button
             onClick={() => setMobileMenuOpen(prev => !prev)}
-            className="md:hidden p-2 rounded-lg border border-white/10 text-gray-400 hover:text-white"
+            className="menu-toggle-btn"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
           
-          <div className="flex items-center gap-2 cursor-pointer" onClick={handleNewSession}>
-            <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-2 rounded-xl text-white">
+          <div className="logo-section" style={{ cursor: 'pointer' }} onClick={handleNewSession}>
+            <div className="logo-icon">
               <Sparkles className="w-5 h-5" />
             </div>
-            <h1 className="text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
-              StudyBuddy <span className="text-purple-400 font-medium text-sm border border-purple-500/30 px-1.5 py-0.5 rounded bg-purple-500/10 ml-1">AI</span>
+            <h1 className="logo-text">
+              StudyBuddy<span className="logo-badge">AI</span>
             </h1>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="header-actions">
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-xl border border-white/10 text-gray-400 hover:text-white transition-colors"
-            title="Toggle Light/Dark Theme"
+            className="btn"
+            style={{ padding: '8px', borderRadius: 'var(--radius-sm)' }}
+            title="Toggle Theme"
           >
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
@@ -311,9 +312,9 @@ export default function App() {
       </header>
 
       {/* Main Workspace Layout */}
-      <div className="flex-1 flex relative">
+      <div className="main-layout">
         {/* Sidebar for Desktop */}
-        <aside className="hidden md:block w-72 border-r border-white/10 p-5 shrink-0 bg-black/10">
+        <aside className="desktop-sidebar">
           <HistorySidebar
             sessions={sessions}
             activeSessionId={activeSessionId}
@@ -327,10 +328,10 @@ export default function App() {
         {mobileMenuOpen && (
           <>
             <div 
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+              className="mobile-overlay"
               onClick={() => setMobileMenuOpen(false)}
             />
-            <aside className="fixed left-0 top-[73px] bottom-0 w-80 bg-bg-app border-r border-white/10 p-5 z-50 md:hidden animate-slideRight">
+            <aside className="mobile-sidebar animate-slideRight">
               <HistorySidebar
                 sessions={sessions}
                 activeSessionId={activeSessionId}
@@ -343,106 +344,128 @@ export default function App() {
         )}
 
         {/* Main Work Area */}
-        <main className="flex-1 p-4 md:p-8 overflow-y-auto max-w-4xl mx-auto w-full space-y-8">
-          {/* Recovered Items Banner */}
-          {isRecoveredNotice && (
-            <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/10 text-amber-400 text-xs md:text-sm flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold">Partial Recovery:</span> The AI returned some malformed formatting at the end. We successfully extracted the fully completed cards/questions.
-              </div>
-            </div>
-          )}
-
-          {/* Error Banner */}
-          {error && (
-            <div className="p-5 rounded-xl border border-red-500/20 bg-red-500/10 text-red-400 text-sm space-y-3">
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
+        <main className="content-area">
+          <div className="content-wrapper">
+            {/* Recovered Items Banner */}
+            {isRecoveredNotice && (
+              <div className="notice-banner recovered">
+                <AlertTriangle className="w-5 h-5" style={{ flexShrink: 0 }} />
                 <div>
-                  <span className="font-bold">Generation Error:</span> {error}
+                  <strong>Partial Recovery:</strong> The AI returned some malformed formatting at the end. We successfully extracted the fully completed cards/questions.
                 </div>
               </div>
-              <div className="flex gap-2 pl-8">
-                <button onClick={handleRetry} className="btn py-1.5 px-4 text-xs border-red-500/30 bg-red-500/5 hover:bg-red-500/10 text-red-300 font-semibold flex items-center gap-1">
-                  <RefreshCw className="w-3.5 h-3.5" />
-                  Retry Request
-                </button>
-                <button onClick={() => setError(null)} className="btn py-1.5 px-4 text-xs border-white/10 hover:bg-white/5 text-gray-400">
-                  Dismiss
-                </button>
-              </div>
-            </div>
-          )}
+            )}
 
-          {/* View Dispatcher */}
-          {!activeSessionId && !isLoading && !error && (
-            <Dashboard onSubmit={handleDashboardSubmit} isLoading={isLoading} />
-          )}
-
-          {/* Loading / Streaming State WITHOUT any items yet */}
-          {isLoading && (!activeData || (activeData.cards?.length === 0 && activeData.questions?.length === 0 && activeData.steps?.length === 0)) && (
-            <div className="glass-panel p-12 text-center space-y-6 max-w-xl mx-auto pulse-glow">
-              <div className="relative w-16 h-16 mx-auto">
-                <div className="absolute inset-0 rounded-full border-4 border-purple-500/20" />
-                <div className="absolute inset-0 rounded-full border-4 border-t-purple-500 border-r-pink-500 animate-spin" />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-lg font-bold">Consulting StudyBuddy AI...</h3>
-                <p className="text-xs text-gray-400 max-w-sm mx-auto">
-                  Generating structured study materials. This may take up to a minute depending on prompt size.
-                </p>
-              </div>
-              
-              {/* Shimmer items placeholders */}
-              <div className="space-y-3 max-w-md mx-auto pt-4">
-                <div className="shimmer-loading h-10 rounded-lg" />
-                <div className="shimmer-loading h-24 rounded-lg" />
-              </div>
-            </div>
-          )}
-
-          {/* Streaming display OR final rendering */}
-          {activeData && (
-            <div className="space-y-6">
-              {/* Back Button */}
-              <button 
-                onClick={handleNewSession}
-                className="btn py-1.5 px-3 text-xs flex items-center gap-1.5 border-white/10 text-gray-400 hover:text-white"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                Back to Dashboard
-              </button>
-
-              {/* Streaming Overlay Notice */}
-              {isLoading && (
-                <div className="p-3 rounded-lg border border-purple-500/20 bg-purple-500/5 text-purple-400 text-xs flex items-center gap-2 justify-center animate-pulse">
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                  <span>AI is streaming modifications... items appear below as they complete.</span>
+            {/* Error Banner */}
+            {error && (
+              <div className="notice-banner error" style={{ flexDirection: 'column', gap: '12px' }}>
+                <div className="align-center">
+                  <AlertTriangle className="w-5 h-5" style={{ flexShrink: 0 }} />
+                  <div>
+                    <strong>Generation Error:</strong> {error}
+                  </div>
                 </div>
-              )}
-
-              {/* Renders the selected interactive tool */}
-              {activeData.type === 'flashcards' && (
-                <FlashcardsView data={activeData} onUpdateData={() => {}} />
-              )}
-              {activeData.type === 'quiz' && (
-                <QuizView data={activeData} />
-              )}
-              {activeData.type === 'roadmap' && (
-                <RoadmapView data={activeData} />
-              )}
-
-              {/* Refinement Loop Box */}
-              <div className="pt-6 border-t border-white/10">
-                <RefinementConsole 
-                  onSubmit={handleRefinementSubmit} 
-                  isLoading={isLoading} 
-                  mode={activeData.type}
-                />
+                <div className="notice-actions" style={{ marginLeft: '28px' }}>
+                  <button 
+                    onClick={handleRetry} 
+                    className="btn"
+                    style={{
+                      padding: '6px 12px',
+                      fontSize: '0.75rem',
+                      borderColor: 'rgba(239, 68, 68, 0.3)',
+                      background: 'rgba(239, 68, 68, 0.05)',
+                      color: '#fca5a5'
+                    }}
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    Retry
+                  </button>
+                  <button 
+                    onClick={() => setError(null)} 
+                    className="btn"
+                    style={{ padding: '6px 12px', fontSize: '0.75rem' }}
+                  >
+                    Dismiss
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+
+            {/* View Dispatcher */}
+            {!activeSessionId && !isLoading && !error && (
+              <Dashboard onSubmit={handleDashboardSubmit} isLoading={isLoading} />
+            )}
+
+            {/* Loading / Streaming State WITHOUT any items yet */}
+            {isLoading && (!activeData || (activeData.cards?.length === 0 && activeData.questions?.length === 0 && activeData.steps?.length === 0)) && (
+              <div className="glass-panel loader-layout pulse-glow" style={{ maxWidth: '500px', margin: '0 auto' }}>
+                <div className="loader-spinner-box">
+                  <div className="spinner-bg" />
+                  <div className="spinner-fill" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Consulting StudyBuddy AI...</h3>
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '6px', maxWidth: '300px' }}>
+                    Generating structured study materials. This may take up to a minute depending on prompt size.
+                  </p>
+                </div>
+                
+                {/* Shimmer items placeholders */}
+                <div style={{ width: '100%', maxWidth: '360px' }}>
+                  <div className="shimmer-loading shimmer-block-small" />
+                  <div className="shimmer-loading shimmer-block-large" />
+                </div>
+              </div>
+            )}
+
+            {/* Streaming display OR final rendering */}
+            {activeData && (
+              <div className="content-wrapper" style={{ gap: '20px' }}>
+                {/* Back Button */}
+                <div>
+                  <button 
+                    onClick={handleNewSession}
+                    className="btn"
+                    style={{ padding: '6px 12px', fontSize: '0.75rem' }}
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    Back to Dashboard
+                  </button>
+                </div>
+
+                {/* Streaming Overlay Notice */}
+                {isLoading && (
+                  <div 
+                    className="notice-banner mock"
+                    style={{ justifyContent: 'center', margin: 0, animation: 'pulse 2s infinite' }}
+                  >
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>AI is streaming modifications... items appear below as they complete.</span>
+                  </div>
+                )}
+
+                {/* Renders the selected interactive tool */}
+                {activeData.type === 'flashcards' && (
+                  <FlashcardsView data={activeData} onUpdateData={() => {}} />
+                )}
+                {activeData.type === 'quiz' && (
+                  <QuizView data={activeData} />
+                )}
+                {activeData.type === 'roadmap' && (
+                  <RoadmapView data={activeData} />
+                )}
+
+                {/* Refinement Loop Box */}
+                <div style={{ marginTop: '16px', borderTop: '1px solid var(--border-color)', paddingTop: '24px' }}>
+                  <RefinementConsole 
+                    onSubmit={handleRefinementSubmit} 
+                    isLoading={isLoading} 
+                    mode={activeData.type}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         </main>
       </div>
     </div>

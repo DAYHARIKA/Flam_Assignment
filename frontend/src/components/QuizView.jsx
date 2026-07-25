@@ -97,59 +97,61 @@ export default function QuizView({ data }) {
 
   if (activeQuestions.length === 0) {
     return (
-      <div className="glass-panel p-8 text-center space-y-4 max-w-xl mx-auto">
-        <AlertCircle className="w-12 h-12 text-purple-400 mx-auto" />
-        <h3 className="text-xl font-bold">No Questions Available</h3>
-        <p className="text-sm text-gray-400">The quiz didn't generate any valid questions.</p>
+      <div className="glass-panel text-center" style={{ padding: '32px', maxWidth: '500px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+        <AlertCircle className="w-12 h-12 text-purple-400" />
+        <h3 style={{ fontSize: '1.25rem', fontWeight: 700 }}>No Questions Available</h3>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>The quiz did not generate any valid questions.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 max-w-xl mx-auto">
-      <div className="flex justify-between items-center border-b border-white/10 pb-4">
-        <div>
-          <h2 className="text-xl font-bold">{title || 'Quiz'}</h2>
-          <p className="text-xs text-gray-400">
+    <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+      <div className="study-header">
+        <div className="study-title-box">
+          <h2>{title || 'Quiz'}</h2>
+          <p className="study-subtitle">
             {quizFinished ? 'Results' : `Question ${currentIndex + 1} of ${activeQuestions.length}`}
             {isRetesting && ' (Re-testing Wrong Answers)'}
           </p>
         </div>
-        <button onClick={handleRestartFull} className="btn py-1 px-3 text-xs flex items-center gap-1.5">
+        <button 
+          onClick={handleRestartFull} 
+          className="btn" 
+          style={{ padding: '6px 12px', fontSize: '0.75rem' }}
+        >
           <RefreshCw className="w-3.5 h-3.5" />
-          Restart Quiz
+          Restart
         </button>
       </div>
 
       {!quizFinished && currentQuestion ? (
-        <div className="space-y-6">
+        <div>
           {/* Question Stem */}
-          <div className="glass-panel p-6 bg-purple-500/5">
-            <h3 className="text-lg md:text-xl font-semibold leading-relaxed">
-              {currentQuestion.question}
-            </h3>
+          <div className="quiz-question-card">
+            <h3>{currentQuestion.question}</h3>
           </div>
 
           {/* Options Grid */}
-          <div className="space-y-3">
+          <div className="options-grid">
             {currentQuestion.options.map((option, idx) => {
               const selectedIdx = selectedAnswers[currentQuestion.id];
               const isAnswered = selectedIdx !== undefined;
               const isSelected = selectedIdx === idx;
               const isCorrect = currentQuestion.answerIndex === idx;
 
-              let buttonClass = 'border-white/10 bg-white/5 text-gray-300 hover:bg-white/10';
+              let optionClass = '';
               let badge = null;
 
               if (isAnswered) {
                 if (isCorrect) {
-                  buttonClass = 'border-emerald-500 bg-emerald-500/10 text-emerald-400';
-                  badge = <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />;
+                  optionClass = 'correct';
+                  badge = <CheckCircle2 className="w-4 h-4 text-emerald-400" />;
                 } else if (isSelected) {
-                  buttonClass = 'border-red-500 bg-red-500/10 text-red-400';
-                  badge = <XCircle className="w-4 h-4 text-red-400 shrink-0" />;
+                  optionClass = 'incorrect';
+                  badge = <XCircle className="w-4 h-4 text-red-400" />;
                 } else {
-                  buttonClass = 'border-white/5 bg-white/2 text-gray-500 opacity-60';
+                  optionClass = 'disabled';
                 }
               }
 
@@ -157,16 +159,20 @@ export default function QuizView({ data }) {
                 <button
                   key={idx}
                   onClick={() => handleSelectOption(idx)}
-                  className={`w-full p-4 rounded-xl border text-left flex justify-between items-center gap-3 transition-all ${buttonClass}`}
+                  className={`option-btn ${optionClass}`}
                   disabled={isAnswered}
                 >
-                  <div className="flex items-center gap-3">
-                    <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
-                      isSelected ? 'bg-purple-500 text-white' : 'bg-black/30 text-gray-400'
-                    }`}>
+                  <div className="align-center" style={{ gap: '0px' }}>
+                    <span 
+                      className="option-index"
+                      style={{
+                        background: isSelected ? 'var(--accent-purple)' : '',
+                        color: isSelected ? 'white' : ''
+                      }}
+                    >
                       {idx + 1}
                     </span>
-                    <span className="text-sm md:text-base font-medium">{option}</span>
+                    <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{option}</span>
                   </div>
                   {badge}
                 </button>
@@ -176,35 +182,40 @@ export default function QuizView({ data }) {
 
           {/* Answer Explanation Box */}
           {selectedAnswers[currentQuestion.id] !== undefined && (
-            <div className="glass-panel p-5 bg-purple-500/5 border-purple-500/20 text-sm space-y-2 animate-fadeIn">
-              <div className="flex items-center gap-2 font-semibold">
+            <div className="explanation-drawer animate-fadeIn">
+              <div 
+                className={`explanation-status ${
+                  selectedAnswers[currentQuestion.id] === currentQuestion.answerIndex ? 'correct' : 'incorrect'
+                }`}
+              >
                 {selectedAnswers[currentQuestion.id] === currentQuestion.answerIndex ? (
-                  <span className="text-emerald-400 flex items-center gap-1">
-                    <CheckCircle2 className="w-4 h-4" /> Correct
-                  </span>
+                  <>
+                    <CheckCircle2 className="w-4 h-4" /> Correct Answer
+                  </>
                 ) : (
-                  <span className="text-red-400 flex items-center gap-1">
-                    <XCircle className="w-4 h-4" /> Incorrect
-                  </span>
+                  <>
+                    <XCircle className="w-4 h-4" /> Incorrect Answer
+                  </>
                 )}
               </div>
-              <p className="text-gray-300 leading-relaxed">
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.5 }}>
                 {currentQuestion.explanation}
               </p>
             </div>
           )}
 
           {/* Action Row */}
-          <div className="flex justify-between items-center">
-            <div className="text-xs text-gray-500">
-              {!selectedAnswers[currentQuestion.id] !== undefined 
+          <div className="flex-row-between" style={{ marginTop: '16px' }}>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+              {selectedAnswers[currentQuestion.id] === undefined 
                 ? '⌨️ Choose 1-4 to answer' 
                 : '⌨️ Press Enter to continue'}
             </div>
             <button
               onClick={handleNext}
               disabled={selectedAnswers[currentQuestion.id] === undefined}
-              className="btn btn-primary px-6 flex items-center gap-1.5"
+              className="btn btn-primary"
+              style={{ padding: '10px 20px' }}
             >
               {currentIndex === activeQuestions.length - 1 ? 'Finish Quiz' : 'Next Question'}
               <ChevronRight className="w-4 h-4" />
@@ -213,53 +224,58 @@ export default function QuizView({ data }) {
         </div>
       ) : (
         /* Quiz Finished View */
-        <div className="glass-panel p-8 text-center space-y-6">
-          <div className="space-y-2">
-            <h3 className="text-2xl font-bold">Quiz Finished!</h3>
-            <p className="text-gray-400">
-              You scored <span className="text-purple-400 font-bold">{score}</span> out of{' '}
-              <span className="font-semibold">{activeQuestions.length}</span> (
+        <div className="glass-panel score-card">
+          <div>
+            <h3 style={{ fontSize: '1.4rem', fontWeight: 700 }}>Quiz Finished!</h3>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '8px' }}>
+              You scored <strong style={{ color: '#c084fc' }}>{score}</strong> out of{' '}
+              <strong>{activeQuestions.length}</strong> (
               {Math.round((score / activeQuestions.length) * 100)}%)
             </p>
           </div>
 
           {/* Score Circle / Meter */}
-          <div className="relative w-32 h-32 mx-auto flex items-center justify-center">
-            <svg className="w-full h-full transform -rotate-90">
+          <div className="score-ring-box">
+            <svg className="score-circle-svg" width="128" height="128">
               <circle
                 cx="64"
                 cy="64"
                 r="54"
-                className="stroke-white/5 fill-none"
+                className="score-circle-bg"
                 strokeWidth="10"
               />
               <circle
                 cx="64"
                 cy="64"
                 r="54"
-                className="stroke-purple-500 fill-none transition-all duration-1000 ease-out"
+                className="score-circle-fill"
                 strokeWidth="10"
                 strokeDasharray={2 * Math.PI * 54}
                 strokeDashoffset={2 * Math.PI * 54 * (1 - score / activeQuestions.length)}
                 strokeLinecap="round"
               />
             </svg>
-            <div className="absolute text-2xl font-bold text-white">
+            <div className="score-text-overlay">
               {Math.round((score / activeQuestions.length) * 100)}%
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row justify-center gap-3">
+          <div className="score-actions">
             {wrongQuestionIds.length > 0 && (
               <button
                 onClick={handleStartRetest}
-                className="btn border-purple-500/30 text-purple-400 bg-purple-500/5 hover:bg-purple-500/10 px-6"
+                className="btn"
+                style={{
+                  borderColor: 'rgba(139, 92, 246, 0.3)',
+                  background: 'rgba(139, 92, 246, 0.05)',
+                  color: '#c084fc'
+                }}
               >
-                Re-test Wrong Answers ({wrongQuestionIds.length})
+                Re-test Wrong ({wrongQuestionIds.length})
               </button>
             )}
-            <button onClick={handleRestartFull} className="btn btn-primary px-6">
-              Restart Full Quiz
+            <button onClick={handleRestartFull} className="btn btn-primary">
+              Restart Quiz
             </button>
           </div>
         </div>

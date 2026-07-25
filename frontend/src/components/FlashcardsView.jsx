@@ -97,62 +97,73 @@ export default function FlashcardsView({ data, onUpdateData }) {
   const remainingCount = totalCards - masteredCount;
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/10 pb-4">
-        <div>
-          <h2 className="text-xl font-bold">{title || 'Flashcards'}</h2>
-          <p className="text-xs text-gray-400">
+    <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+      <div className="study-header">
+        <div className="study-title-box">
+          <h2>{title || 'Flashcards'}</h2>
+          <p className="study-subtitle">
             Card {activeCards.length > 0 ? currentIndex + 1 : 0} of {activeCards.length}
             {filterUnmastered && ' (Filtered: Unmastered Only)'}
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="study-header-actions">
           <button 
             onClick={() => setFilterUnmastered(!filterUnmastered)}
-            className={`btn py-1 px-3 text-xs ${filterUnmastered ? 'border-purple-500 bg-purple-500/10 text-purple-400' : ''}`}
+            className="btn"
+            style={{
+              padding: '6px 12px',
+              fontSize: '0.75rem',
+              borderColor: filterUnmastered ? 'var(--accent-purple)' : '',
+              background: filterUnmastered ? 'rgba(139, 92, 246, 0.1)' : '',
+              color: filterUnmastered ? '#c084fc' : ''
+            }}
             disabled={cards.length === 0}
           >
-            Review Wrong/Unmastered ({remainingCount})
+            Review Wrong ({remainingCount})
           </button>
-          <button onClick={resetProgress} className="btn py-1 px-3 text-xs flex items-center gap-1.5">
+          <button 
+            onClick={resetProgress} 
+            className="btn"
+            style={{ padding: '6px 12px', fontSize: '0.75rem' }}
+          >
             <RefreshCw className="w-3.5 h-3.5" />
-            Reset Progress
+            Reset
           </button>
         </div>
       </div>
 
       {/* Progress Bars */}
-      <div className="grid grid-cols-3 gap-3 text-center">
-        <div className="glass-panel p-2.5 rounded-xl">
-          <div className="text-xs text-gray-400 mb-0.5">Mastered</div>
-          <div className="text-lg font-bold text-emerald-400">{masteredCount}</div>
+      <div className="metrics-row">
+        <div className="metric-box">
+          <div className="metric-label">Mastered</div>
+          <div className="metric-value emerald">{masteredCount}</div>
         </div>
-        <div className="glass-panel p-2.5 rounded-xl">
-          <div className="text-xs text-gray-400 mb-0.5">Need Review</div>
-          <div className="text-lg font-bold text-amber-400">{reviewCount}</div>
+        <div className="metric-box">
+          <div className="metric-label">Review</div>
+          <div className="metric-value amber">{reviewCount}</div>
         </div>
-        <div className="glass-panel p-2.5 rounded-xl">
-          <div className="text-xs text-gray-400 mb-0.5">Unseen</div>
-          <div className="text-lg font-bold text-gray-400">{totalCards - masteredCount - reviewCount}</div>
+        <div className="metric-box">
+          <div className="metric-label">Unseen</div>
+          <div className="metric-value muted">{totalCards - masteredCount - reviewCount}</div>
         </div>
       </div>
 
       {/* Main Flashcard Scene */}
       {activeCards.length === 0 ? (
-        <div className="glass-panel p-12 text-center space-y-4">
-          <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
+        <div className="glass-panel text-center" style={{ padding: '48px', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
+          <CheckCircle2 className="w-12 h-12 text-emerald-400" />
           <div>
-            <h3 className="text-lg font-semibold">Deck Completed!</h3>
-            <p className="text-sm text-gray-400">You've mastered all the flashcards in this deck.</p>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Deck Completed!</h3>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px' }}>You've mastered all the flashcards in this deck.</p>
           </div>
-          <button onClick={resetProgress} className="btn btn-primary px-6">
+          <button onClick={resetProgress} className="btn btn-primary" style={{ padding: '10px 24px' }}>
             Review Deck Again
           </button>
         </div>
       ) : (
         currentCard && (
-          <div className="space-y-6">
+          <div>
             <div className="card-scene">
               <div 
                 className={`flashcard-3d ${isFlipped ? 'flipped' : ''}`}
@@ -160,17 +171,17 @@ export default function FlashcardsView({ data, onUpdateData }) {
               >
                 {/* Front Face */}
                 <div className="card-face card-face-front">
-                  <div className="flex justify-between items-center text-xs text-gray-400">
+                  <div className="flex-row-between" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                     <span>Front</span>
-                    <span className="uppercase tracking-wider font-semibold text-purple-400">Question</span>
+                    <span style={{ fontWeight: 700, textTransform: 'uppercase', color: '#a78bfa' }}>Question</span>
                   </div>
-                  <div className="flex-1 flex items-center justify-center text-center px-4">
-                    <h3 className="text-xl md:text-2xl font-semibold leading-relaxed">
+                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '16px 0' }}>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: 600, lineHeight: 1.5 }}>
                       {currentCard.front}
                     </h3>
                   </div>
-                  <div className="flex justify-between items-center text-xs text-gray-400">
-                    <span>Click card to reveal answer</span>
+                  <div className="flex-row-between" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                    <span>Click card to flip</span>
                     {currentCard.hint && (
                       <button 
                         type="button"
@@ -178,9 +189,17 @@ export default function FlashcardsView({ data, onUpdateData }) {
                           e.stopPropagation();
                           setShowHint(!showHint);
                         }}
-                        className="text-purple-400 hover:underline flex items-center gap-1 font-semibold"
+                        className="btn"
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          padding: 0,
+                          fontSize: '0.75rem',
+                          color: '#a78bfa',
+                          fontWeight: 700,
+                          cursor: 'pointer'
+                        }}
                       >
-                        {showHint ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                         {showHint ? 'Hide Hint' : 'Show Hint'}
                       </button>
                     )}
@@ -189,16 +208,16 @@ export default function FlashcardsView({ data, onUpdateData }) {
 
                 {/* Back Face */}
                 <div className="card-face card-face-back">
-                  <div className="flex justify-between items-center text-xs text-gray-400">
+                  <div className="flex-row-between" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                     <span>Back</span>
-                    <span className="uppercase tracking-wider font-semibold text-pink-400">Explanation</span>
+                    <span style={{ fontWeight: 700, textTransform: 'uppercase', color: '#f472b6' }}>Explanation</span>
                   </div>
-                  <div className="flex-1 flex items-center justify-center text-center px-4 overflow-y-auto">
-                    <p className="text-base md:text-lg leading-relaxed text-gray-200">
+                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '16px 0', overflowY: 'auto' }}>
+                    <p style={{ fontSize: '1rem', color: 'var(--text-primary)', lineHeight: 1.6 }}>
                       {currentCard.back}
                     </p>
                   </div>
-                  <div className="text-xs text-gray-400 text-center">
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'center' }}>
                     Click card to return to question
                   </div>
                 </div>
@@ -207,52 +226,54 @@ export default function FlashcardsView({ data, onUpdateData }) {
 
             {/* Hint Box */}
             {showHint && currentCard.hint && (
-              <div className="glass-panel p-4 bg-purple-500/5 border-purple-500/20 text-sm text-gray-300 flex items-start gap-2 animate-fadeIn">
-                <AlertCircle className="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />
+              <div className="hint-box animate-fadeIn">
+                <AlertCircle className="w-5 h-5 text-purple-400" style={{ flexShrink: 0 }} />
                 <div>
-                  <span className="font-semibold text-purple-400">Hint:</span> {currentCard.hint}
+                  <strong style={{ color: '#a78bfa' }}>Hint:</strong> {currentCard.hint}
                 </div>
               </div>
             )}
 
             {/* Controls */}
-            <div className="flex justify-between items-center gap-4">
-              <button onClick={handlePrev} className="btn py-3 px-4">
+            <div className="control-row">
+              <button onClick={handlePrev} className="btn" style={{ padding: '12px' }}>
                 <ChevronLeft className="w-5 h-5" />
               </button>
 
-              <div className="flex gap-3">
+              <div className="mastery-btn-group">
                 <button 
                   onClick={() => markMastery(currentCard.id, 'review')}
-                  className={`btn py-3 px-6 flex items-center gap-2 border-amber-500/30 text-amber-400 bg-amber-500/5 hover:bg-amber-500/10 ${
-                    mastery[currentCard.id] === 'review' ? 'ring-2 ring-amber-500' : ''
-                  }`}
+                  className="mastery-btn review"
+                  style={{
+                    boxShadow: mastery[currentCard.id] === 'review' ? '0 0 0 2px #fbbf24' : ''
+                  }}
                 >
                   <AlertCircle className="w-4 h-4" />
-                  Still Reviewing
+                  Review Again
                 </button>
                 <button 
                   onClick={() => markMastery(currentCard.id, 'mastered')}
-                  className={`btn py-3 px-6 flex items-center gap-2 border-emerald-500/30 text-emerald-400 bg-emerald-500/5 hover:bg-emerald-500/10 ${
-                    mastery[currentCard.id] === 'mastered' ? 'ring-2 ring-emerald-500' : ''
-                  }`}
+                  className="mastery-btn mastered"
+                  style={{
+                    boxShadow: mastery[currentCard.id] === 'mastered' ? '0 0 0 2px #34d399' : ''
+                  }}
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   Mastered
                 </button>
               </div>
 
-              <button onClick={handleNext} className="btn py-3 px-4">
+              <button onClick={handleNext} className="btn" style={{ padding: '12px' }}>
                 <ChevronRight className="w-5 h-5" />
               </button>
             </div>
 
             {/* Helper Tips */}
-            <div className="text-center text-xs text-gray-500 space-x-4">
-              <span>⌨️ [Space]: Flip</span>
-              <span>[← / →]: Nav</span>
-              <span>[↑]: Master</span>
-              <span>[↓]: Review</span>
+            <div className="shortcuts-row">
+              <span>⌨️ [Space] Flip</span>
+              <span>[← / →] Nav</span>
+              <span>[↑] Master</span>
+              <span>[↓] Review</span>
             </div>
           </div>
         )
