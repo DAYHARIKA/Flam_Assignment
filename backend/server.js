@@ -340,13 +340,13 @@ app.post('/api/generate', async (req, res) => {
     }
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
+      model: "gemini-1.5-flash",
       generationConfig: {
         responseMimeType: "application/json",
       }
     });
 
-    console.log(`[GEMINI API] Calling gemini-2.5-flash for topic "${topic}" (mode: ${mode})`);
+    console.log(`[GEMINI API] Calling gemini-1.5-flash for topic "${topic}" (mode: ${mode})`);
     
     // Set headers for Event Stream (SSE)
     res.writeHead(200, {
